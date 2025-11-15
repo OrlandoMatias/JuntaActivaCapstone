@@ -1,0 +1,88 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}{% if is_admin %}Gestión de Proyectos Vecinales{% else %}Mis Proyectos{% endif %} - Sistema de Gestión Vecinal{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <h1>{% if is_admin %}Gestión de Proyectos Vecinales{% else %}Mis Proyectos Vecinales{% endif %}</h1>
+    
+    {% if is_admin %}
+    <p>Administre las postulaciones de proyectos vecinales de la comunidad.</p>
+    {% else %}
+    <p>Aquí puedes ver el estado de tus proyectos postulados.</p>
+    {% endif %}
+    
+    {% if proyectos %}
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    {% if is_admin %}
+                    <th>Vecino</th>
+                    {% endif %}
+                    <th>Estado</th>
+                    <th>Fecha Postulación</th>
+                    <th>Descripción</th>
+                    {% if is_admin %}
+                    <th>Acciones</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for proyecto in proyectos %}
+                <tr>
+                    <td>{{ proyecto.id }}</td>
+                    <td><strong>{{ proyecto.nombre }}</strong></td>
+                    {% if is_admin %}
+                    <td>{{ proyecto.vecino.nombre }} {{ proyecto.vecino.apellido }}</td>
+                    {% endif %}
+                    <td>
+                        {% if proyecto.estado == 'aprobado' %}
+                            <span class="badge badge-success">Aprobado</span>
+                        {% elif proyecto.estado == 'rechazado' %}
+                            <span class="badge badge-danger">Rechazado</span>
+                        {% else %}
+                            <span class="badge badge-warning">Pendiente</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ proyecto.fecha_postulacion|date:"d/m/Y" }}</td>
+                    <td>{{ proyecto.descripcion|truncatewords:15 }}</td>
+                    {% if is_admin %}
+                    <td>
+                        {% if proyecto.estado == 'pendiente' %}
+                        <form method="post" action="{% url 'cambiar_estado_proyecto' proyecto.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="estado" value="aprobado">
+                            <button type="submit" class="btn btn-success" style="padding: 0.5rem 1rem; font-size: 0.875rem;" onclick="return confirm('¿Está seguro de aprobar este proyecto?')">
+                                Aprobar
+                            </button>
+                        </form>
+                        <form method="post" action="{% url 'cambiar_estado_proyecto' proyecto.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="estado" value="rechazado">
+                            <button type="submit" class="btn btn-danger" style="padding: 0.5rem 1rem; font-size: 0.875rem;" onclick="return confirm('¿Está seguro de rechazar este proyecto?')">
+                                Rechazar
+                            </button>
+                        </form>
+                        {% else %}
+                            <span style="color: #6c757d;">Procesado</span>
+                        {% endif %}
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="no-data">
+        <p>No hay proyectos vecinales registrados.</p>
+        {% if not is_admin %}
+        <p><a href="{% url 'postular_proyecto' %}">Postular un proyecto</a></p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

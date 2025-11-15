@@ -1,0 +1,16 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Registrar Vecino - Sistema de Gestión Vecinal{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <h1>Registro de Vecino</h1>
+    <p>Complete el formulario para registrarse en la junta de vecinos.</p>
+    
+    <form method="post" class="form-container">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Registrarse</button>
+    </form>
+</div>
+{% endblock %}

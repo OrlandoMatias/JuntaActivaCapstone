@@ -1,0 +1,71 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Espacios Comunitarios - Sistema de Gestión Vecinal{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <h1>🏢 Espacios Comunitarios Disponibles</h1>
+    
+    <div style="margin-bottom: 20px;">
+        <a href="{% url 'calendario_reservas' %}" class="btn btn-info">📅 Ver Calendario de Disponibilidad</a>
+        <a href="{% url 'solicitar_reserva' %}" class="btn btn-success">➕ Solicitar Reserva</a>
+        <a href="{% url 'mis_reservas' %}" class="btn btn-primary">📋 Mis Reservas</a>
+    </div>
+    
+    {% if espacios %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+            {% for espacio in espacios %}
+            <div style="border: 1px solid #ddd; border-radius: 8px; padding: 20px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <h3 style="margin-top: 0; color: #2c3e50;">
+                    {% if espacio.tipo == 'cancha' %}🏀
+                    {% elif espacio.tipo == 'sala' %}🏢
+                    {% elif espacio.tipo == 'plaza' %}🌳
+                    {% endif %}
+                    {{ espacio.nombre }}
+                </h3>
+                <p><strong>Tipo:</strong> {{ espacio.get_tipo_display }}</p>
+                <p><strong>Capacidad:</strong> {{ espacio.capacidad }} personas</p>
+                <p><strong>Descripción:</strong><br>{{ espacio.descripcion }}</p>
+                <div style="margin-top: 15px;">
+                    <a href="{% url 'solicitar_reserva' %}?espacio={{ espacio.id }}" class="btn btn-success btn-sm">Reservar</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="no-data">No hay espacios comunitarios disponibles en este momento.</p>
+    {% endif %}
+</div>
+
+<style>
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+}
+.btn-success {
+    background-color: #27ae60;
+    color: white;
+}
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+.btn-info {
+    background-color: #16a085;
+    color: white;
+}
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 13px;
+}
+.btn:hover {
+    opacity: 0.9;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Noticias - Sistema de Gestión Vecinal{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <h1>Noticias de la Comunidad</h1>
+    
+    {% if user.is_authenticated %}
+    <div class="admin-actions">
+        <a href="{% url 'crear_noticia' %}" class="btn btn-primary">Crear Nueva Noticia</a>
+    </div>
+    {% endif %}
+    
+    {% if noticias %}
+    <div class="noticias-list">
+        {% for noticia in noticias %}
+        <article class="noticia-card">
+            <div class="noticia-header">
+                <h2>{{ noticia.titulo }}</h2>
+                <p class="noticia-meta">
+                    <span class="noticia-fecha">{{ noticia.fecha_publicacion|date:"d/m/Y" }}</span>
+                    <span class="noticia-autor">Por: {{ noticia.autor }}</span>
+                </p>
+            </div>
+            <div class="noticia-contenido">
+                {% if noticia.contenido|length > 300 %}
+                    <p>{{ noticia.contenido|slice:":300" }}...</p>
+                    <details>
+                        <summary>Leer más</summary>
+                        <p>{{ noticia.contenido|slice:"300:" }}</p>
+                    </details>
+                {% else %}
+                    <p>{{ noticia.contenido }}</p>
+                {% endif %}
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="no-data">No hay noticias publicadas en este momento.</p>
+    {% endif %}
+</div>
+{% endblock %}

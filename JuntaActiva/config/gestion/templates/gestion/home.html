@@ -1,0 +1,115 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Inicio - Sistema de Gestión Vecinal{% endblock %}
+
+{% block content %}
+<div class="home-container">
+    <section class="hero-section">
+        <h1>Bienvenido a la Junta de Vecinos</h1>
+        <p>Sistema de Gestión Vecinal - Conectando nuestra comunidad</p>
+    </section>
+
+    <section class="quick-links">
+        <h2>Accesos Rápidos</h2>
+        <div class="links-grid">
+            {% if user.is_authenticated %}
+            <div class="link-card link-card-reservas">
+                <h3>Reservar Espacios</h3>
+                <p>Canchas, salas y plazas</p>
+                <a href="{% url 'listar_espacios' %}" class="btn-action">Reservar</a>
+            </div>
+            {% else %}
+            <div class="link-card">
+                <h3>Registrarse</h3>
+                <p>Únete a nuestra comunidad</p>
+                <a href="{% url 'registrar_vecino' %}" class="btn-action">Registrarse</a>
+            </div>
+            {% endif %}
+            <div class="link-card">
+                <h3>Solicitar Certificado</h3>
+                <p>Certificado de residencia</p>
+                <a href="{% url 'solicitar_certificado' %}" class="btn-action">Solicitar</a>
+            </div>
+            <div class="link-card">
+                <h3>Postular Proyecto</h3>
+                <p>Propón mejoras para la comunidad</p>
+                <a href="{% url 'postular_proyecto' %}" class="btn-action">Postular</a>
+            </div>
+            <div class="link-card">
+                <h3>Ver Actividades</h3>
+                <p>Inscríbete en eventos</p>
+                <a href="{% url 'listar_actividades' %}" class="btn-action">Ver Actividades</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="noticias-section">
+        <div class="section-header">
+            <h2>Últimas Noticias</h2>
+            <a href="{% url 'listar_noticias' %}" class="view-all-link">Ver todas →</a>
+        </div>
+        
+        {% if ultimas_noticias %}
+        <div class="noticias-grid">
+            {% for noticia in ultimas_noticias %}
+            <article class="noticia-card">
+                <h3>{{ noticia.titulo }}</h3>
+                <p class="noticia-meta">
+                    <span class="noticia-fecha">{{ noticia.fecha_publicacion|date:"d/m/Y" }}</span>
+                    <span class="noticia-autor">Por {{ noticia.autor }}</span>
+                </p>
+                <p class="noticia-contenido">
+                    {% if noticia.contenido|length > 150 %}
+                        {{ noticia.contenido|slice:":150" }}...
+                    {% else %}
+                        {{ noticia.contenido }}
+                    {% endif %}
+                </p>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="no-content">No hay noticias publicadas en este momento.</p>
+        {% endif %}
+    </section>
+
+    <section class="actividades-section">
+        <div class="section-header">
+            <h2>Próximas Actividades</h2>
+            <a href="{% url 'listar_actividades' %}" class="view-all-link">Ver todas →</a>
+        </div>
+        
+        {% if proximas_actividades %}
+        <div class="actividades-grid">
+            {% for actividad in proximas_actividades %}
+            <article class="actividad-card">
+                <h3>{{ actividad.nombre }}</h3>
+                <p class="actividad-fecha">📅 {{ actividad.fecha|date:"d/m/Y" }}</p>
+                <p class="actividad-descripcion">
+                    {% if actividad.descripcion|length > 100 %}
+                        {{ actividad.descripcion|slice:":100" }}...
+                    {% else %}
+                        {{ actividad.descripcion }}
+                    {% endif %}
+                </p>
+                <p class="actividad-cupos">
+                    Cupos: {{ actividad.inscritos.count }}/{{ actividad.cupos }}
+                </p>
+                <a href="{% url 'listar_actividades' %}" class="btn-inscribir">Inscribirse</a>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="no-content">No hay actividades programadas en este momento.</p>
+        {% endif %}
+    </section>
+
+    <section class="info-section">
+        <h2>Información de Contacto</h2>
+        <div class="info-content">
+            <p>Para más información sobre nuestros servicios, no dudes en contactarnos.</p>
+            <p>Estamos aquí para servir a nuestra comunidad.</p>
+        </div>
+    </section>
+</div>
+{% endblock %}

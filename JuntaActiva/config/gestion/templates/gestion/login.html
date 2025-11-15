@@ -1,0 +1,33 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Iniciar Sesión - Sistema de Gestión Vecinal{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <h1>Iniciar Sesión</h1>
+    
+    {% if form.errors %}
+    <div class="message message-error">
+        Usuario o contraseña incorrectos. Por favor, intenta nuevamente.
+    </div>
+    {% endif %}
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <label for="id_username">Usuario:</label>
+        <input type="text" name="username" id="id_username" required autofocus>
+        
+        <label for="id_password">Contraseña:</label>
+        <input type="password" name="password" id="id_password" required>
+        
+        <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+        
+        <input type="hidden" name="next" value="{{ next }}">
+    </form>
+    
+    <p style="margin-top: 1.5rem; color: #6c757d;">
+        ¿No tienes cuenta? <a href="{% url 'registrar_vecino' %}">Regístrate aquí</a>
+    </p>
+</div>
+{% endblock %}

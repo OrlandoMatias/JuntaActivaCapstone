@@ -1,0 +1,66 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Actividades Comunitarias - Sistema de Gestión Vecinal{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <h1>Actividades Comunitarias</h1>
+    
+    {% if not user.is_authenticated %}
+    <div class="message message-info">
+        <strong>Nota:</strong> Debes <a href="{% url 'login' %}">iniciar sesión</a> para inscribirte en las actividades.
+    </div>
+    {% endif %}
+    
+    {% if actividades_con_cupos %}
+    <div class="actividades-grid">
+        {% for item in actividades_con_cupos %}
+        <div class="actividad-card">
+            <h3>{{ item.actividad.nombre }}</h3>
+            <p class="actividad-fecha"><strong>Fecha:</strong> {{ item.actividad.fecha|date:"d/m/Y" }}</p>
+            <p class="actividad-descripcion">{{ item.actividad.descripcion }}</p>
+            
+            <div class="actividad-cupos">
+                <p><strong>Cupos totales:</strong> {{ item.actividad.cupos }}</p>
+                <p><strong>Inscritos:</strong> {{ item.actividad.inscritos.count }}</p>
+                <p><strong>Cupos disponibles:</strong> 
+                    <span class="{% if item.cupos_disponibles > 0 %}cupos-disponibles{% else %}cupos-llenos{% endif %}">
+                        {{ item.cupos_disponibles }}
+                    </span>
+                </p>
+            </div>
+            
+            {% if user.is_authenticated %}
+                {% if item.esta_inscrito %}
+                <div class="actividad-llena" style="background-color: #d4edda; border-left-color: #28a745;">
+                    <p class="mensaje-llena" style="color: #155724;">✓ Ya estás inscrito</p>
+                </div>
+                <form method="post" action="{% url 'desinscribirse_actividad' item.actividad.id %}" class="inscripcion-form" style="margin-top: 0.5rem;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning" onclick="return confirm('¿Estás seguro de que deseas desinscribirte?')">Desinscribirse</button>
+                </form>
+                {% elif item.cupos_disponibles > 0 %}
+                <form method="post" action="{% url 'inscribirse_actividad' item.actividad.id %}" class="inscripcion-form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">Inscribirse</button>
+                </form>
+                {% else %}
+                <div class="actividad-llena">
+                    <p class="mensaje-llena">⚠️ Esta actividad no tiene cupos disponibles</p>
+                </div>
+                {% endif %}
+            {% else %}
+            <div class="actividad-llena" style="background-color: #d1ecf1; border-left-color: #17a2b8;">
+                <p class="mensaje-llena" style="color: #0c5460;">
+                    <a href="{% url 'login' %}">Inicia sesión</a> para inscribirte
+                </p>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="no-data">No hay actividades programadas en este momento.</p>
+    {% endif %}
+</div>
+{% endblock %}

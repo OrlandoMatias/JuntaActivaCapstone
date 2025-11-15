@@ -1,0 +1,158 @@
+{% extends 'gestion/base.html' %}
+{% load reservas_filters %}
+
+{% block title %}Calendario de Reservas - Sistema de Gestión Vecinal{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <h1>📅 Calendario de Disponibilidad</h1>
+    
+    <div style="margin-bottom: 20px;">
+        <a href="{% url 'listar_espacios' %}" class="btn btn-secondary">← Volver a Espacios</a>
+        <a href="{% url 'solicitar_reserva' %}" class="btn btn-success">➕ Solicitar Reserva</a>
+        <a href="{% url 'mis_reservas' %}" class="btn btn-primary">📋 Mis Reservas</a>
+    </div>
+    
+    <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <form method="get" style="display: flex; align-items: center; gap: 15px;">
+            <label for="fecha" style="font-weight: bold;">Seleccionar Fecha:</label>
+            <input type="date" name="fecha" id="fecha" value="{{ fecha_seleccionada|date:'Y-m-d' }}" class="form-control" style="width: 200px;" onchange="this.form.submit()">
+            <button type="submit" class="btn btn-primary">Ver Disponibilidad</button>
+        </form>
+    </div>
+    
+    <h2>Disponibilidad para {{ fecha_seleccionada|date:"d" }} de {{ fecha_seleccionada|date:"F" }} de {{ fecha_seleccionada|date:"Y" }}</h2>
+    
+    <div style="background: #e8f5e9; border: 1px solid #4caf50; border-radius: 4px; padding: 15px; margin-bottom: 20px;">
+        <strong>Leyenda:</strong>
+        <span style="margin-left: 20px;">🟢 <strong>Disponible</strong> - Puede reservar</span>
+        <span style="margin-left: 20px;">🔴 <strong>Ocupado</strong> - Ya reservado</span>
+    </div>
+    
+    {% if espacios %}
+    <div style="overflow-x: auto;">
+        <table class="calendario-table">
+            <thead>
+                <tr>
+                    <th style="min-width: 200px;">Espacio</th>
+                    {% for horario_code, horario_nombre in horarios %}
+                    <th style="min-width: 180px;">{{ horario_nombre }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for espacio_id, data in disponibilidad.items %}
+                <tr>
+                    <td style="font-weight: bold;">
+                        {% if data.espacio.tipo == 'cancha' %}🏀
+                        {% elif data.espacio.tipo == 'sala' %}🏢
+                        {% elif data.espacio.tipo == 'plaza' %}🌳
+                        {% endif %}
+                        {{ data.espacio.nombre }}
+                        <br>
+                        <small style="color: #7f8c8d;">Cap: {{ data.espacio.capacidad }} personas</small>
+                    </td>
+                    {% for horario_code, horario_nombre in horarios %}
+                    {% with horario_data=data.horarios|get_item:horario_code %}
+                    <td class="{% if horario_data.disponible %}disponible{% else %}ocupado{% endif %}">
+                        {% if horario_data.disponible %}
+                            <div class="estado-disponible">
+                                🟢 <strong>Disponible</strong>
+                                <br>
+                                <a href="{% url 'solicitar_reserva' %}?espacio={{ data.espacio.id }}&fecha={{ fecha_seleccionada|date:'Y-m-d' }}&horario={{ horario_code }}" class="btn btn-success btn-xs">Reservar</a>
+                            </div>
+                        {% else %}
+                            <div class="estado-ocupado">
+                                🔴 <strong>Ocupado</strong>
+                                <br>
+                                {% if horario_data.reserva %}
+                                <small>Reservado por:<br>{{ horario_data.reserva.vecino.nombre }} {{ horario_data.reserva.vecino.apellido }}</small>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </td>
+                    {% endwith %}
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="no-data">No hay espacios comunitarios disponibles.</p>
+    {% endif %}
+</div>
+
+<style>
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+}
+.btn-success {
+    background-color: #27ae60;
+    color: white;
+}
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+.btn-secondary {
+    background-color: #95a5a6;
+    color: white;
+}
+.btn-xs {
+    padding: 5px 10px;
+    font-size: 12px;
+}
+.btn:hover {
+    opacity: 0.9;
+}
+.calendario-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.calendario-table th,
+.calendario-table td {
+    border: 1px solid #ddd;
+    padding: 15px;
+    text-align: center;
+}
+.calendario-table th {
+    background-color: #34495e;
+    color: white;
+    font-weight: bold;
+}
+.calendario-table td.disponible {
+    background-color: #e8f5e9;
+}
+.calendario-table td.ocupado {
+    background-color: #ffebee;
+}
+.estado-disponible {
+    color: #27ae60;
+}
+.estado-ocupado {
+    color: #e74c3c;
+}
+.form-control {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+</style>
+
+<!-- Template filter personalizado para acceder a diccionarios -->
+{% load static %}
+<script>
+// Función para obtener items de diccionarios en templates
+</script>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}{% if is_admin %}Gestión de Certificados{% else %}Mis Certificados{% endif %} - Sistema de Gestión Vecinal{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <h1>{% if is_admin %}Gestión de Certificados de Residencia{% else %}Mis Certificados de Residencia{% endif %}</h1>
+    
+    {% if is_admin %}
+    <p>Administre las solicitudes de certificados de residencia de los vecinos.</p>
+    {% else %}
+    <p>Aquí puedes ver el estado de tus solicitudes de certificados de residencia.</p>
+    {% endif %}
+    
+    {% if certificados %}
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    {% if is_admin %}
+                    <th>Vecino</th>
+                    <th>RUT</th>
+                    <th>Email</th>
+                    {% endif %}
+                    <th>Fecha Solicitud</th>
+                    <th>Estado</th>
+                    <th>Código Certificado</th>
+                    {% if is_admin %}
+                    <th>Acciones</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for certificado in certificados %}
+                <tr>
+                    <td>{{ certificado.id }}</td>
+                    {% if is_admin %}
+                    <td>{{ certificado.vecino.nombre }} {{ certificado.vecino.apellido }}</td>
+                    <td>{{ certificado.vecino.rut }}</td>
+                    <td>{{ certificado.vecino.email }}</td>
+                    {% endif %}
+                    <td>{{ certificado.fecha_solicitud|date:"d/m/Y" }}</td>
+                    <td>
+                        {% if certificado.aprobado %}
+                            <span class="badge badge-success">Aprobado</span>
+                        {% else %}
+                            <span class="badge badge-warning">Pendiente</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if certificado.codigo_certificado %}
+                            <strong>{{ certificado.codigo_certificado }}</strong>
+                            <br/>
+                            <a href="{% url 'descargar_certificado_pdf' certificado.id %}" class="btn btn-primary" style="padding: 0.25rem 0.75rem; font-size: 0.875rem; margin-top: 0.5rem;">
+                                📄 Descargar PDF
+                            </a>
+                        {% else %}
+                            <span style="color: #6c757d;">-</span>
+                        {% endif %}
+                    </td>
+                    {% if is_admin %}
+                    <td>
+                        {% if not certificado.aprobado %}
+                        <form method="post" action="{% url 'aprobar_certificado' certificado.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success" style="padding: 0.5rem 1rem; font-size: 0.875rem;" onclick="return confirm('¿Está seguro de aprobar este certificado?')">
+                                Aprobar
+                            </button>
+                        </form>
+                        <form method="post" action="{% url 'rechazar_certificado' certificado.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger" style="padding: 0.5rem 1rem; font-size: 0.875rem;" onclick="return confirm('¿Está seguro de rechazar este certificado?')">
+                                Rechazar
+                            </button>
+                        </form>
+                        {% else %}
+                            <span style="color: #6c757d;">Procesado</span>
+                        {% endif %}
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="no-data">
+        <p>No hay solicitudes de certificados registradas.</p>
+        {% if not is_admin %}
+        <p><a href="{% url 'solicitar_certificado' %}">Solicitar un certificado</a></p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

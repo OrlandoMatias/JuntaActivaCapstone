@@ -1,0 +1,71 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Gestión de Vecinos{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <h1>Gestión de Vecinos</h1>
+    
+    <p>Total Vecinos: {{ total_vecinos }}</p>
+    <p>Miembros Activos: {{ total_miembros }}</p>
+    <p>Pendientes: {{ total_pendientes }}</p>
+    
+    <hr>
+    
+    <h2>Vecinos Pendientes de Aprobación</h2>
+    {% if no_miembros %}
+        <table border="1" cellpadding="10" style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <th>Nombre</th>
+                <th>RUT</th>
+                <th>Email</th>
+                <th>Acción</th>
+            </tr>
+            {% for vecino in no_miembros %}
+            <tr>
+                <td>{{ vecino.nombre }} {{ vecino.apellido }}</td>
+                <td>{{ vecino.rut }}</td>
+                <td>{{ vecino.email }}</td>
+                <td>
+                    <form method="POST" action="{% url 'cambiar_estado_miembro' vecino.id %}">
+                        {% csrf_token %}
+                        <button type="submit">Aprobar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No hay vecinos pendientes</p>
+    {% endif %}
+    
+    <hr>
+    
+    <h2>Miembros Activos</h2>
+    {% if miembros %}
+        <table border="1" cellpadding="10" style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <th>Nombre</th>
+                <th>RUT</th>
+                <th>Email</th>
+                <th>Acción</th>
+            </tr>
+            {% for vecino in miembros %}
+            <tr>
+                <td>{{ vecino.nombre }} {{ vecino.apellido }}</td>
+                <td>{{ vecino.rut }}</td>
+                <td>{{ vecino.email }}</td>
+                <td>
+                    <form method="POST" action="{% url 'cambiar_estado_miembro' vecino.id %}">
+                        {% csrf_token %}
+                        <button type="submit">Quitar Membresía</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No hay miembros activos</p>
+    {% endif %}
+</div>
+{% endblock %}

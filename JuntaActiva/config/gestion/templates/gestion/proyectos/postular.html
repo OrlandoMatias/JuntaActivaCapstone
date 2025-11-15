@@ -1,0 +1,33 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Postular Proyecto Vecinal - Sistema de Gestión Vecinal{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <h1>Postular Proyecto Vecinal</h1>
+    
+    <p style="margin-bottom: 1.5rem; color: #555;">
+        Presenta tu idea de proyecto para mejorar nuestra comunidad. 
+        Un administrador revisará tu propuesta y te notificará sobre su estado.
+    </p>
+    
+    <div class="message message-info">
+        <strong>Postulante:</strong> {{ vecino.nombre }} {{ vecino.apellido }} ({{ vecino.rut }})
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        {% if form.errors %}
+        <div class="message message-error">
+            Por favor corrige los errores a continuación.
+        </div>
+        {% endif %}
+        
+        {{ form.as_p }}
+        
+        <button type="submit" class="btn btn-primary">Postular Proyecto</button>
+        <a href="{% url 'home' %}" class="btn btn-secondary" style="margin-left: 1rem;">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

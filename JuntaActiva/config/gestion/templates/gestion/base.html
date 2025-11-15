@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Gestión Vecinal{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'home' %}" class="nav-brand">Junta de Vecinos</a>
+            <ul class="nav-menu">
+                <li><a href="{% url 'home' %}">Inicio</a></li>
+                <li><a href="{% url 'listar_noticias' %}">Noticias</a></li>
+                <li><a href="{% url 'listar_actividades' %}">Actividades</a></li>
+                
+                {% if user.is_authenticated %}
+                    {# Menú de Reservas (para todos los usuarios autenticados) #}
+                    <li class="nav-divider">|</li>
+                    <li><a href="{% url 'listar_espacios' %}">Reservas</a></li>
+                    
+                    {% if user.is_staff %}
+                        {# Menú para administradores #}
+                        <li class="nav-divider">|</li>
+                        <li><a href="{% url 'lista_vecinos' %}">Gestión Vecinos</a></li>
+                        <li><a href="{% url 'listar_certificados' %}">Gestión Certificados</a></li>
+                        <li><a href="{% url 'listar_proyectos' %}">Gestión Proyectos</a></li>
+                        <li><a href="{% url 'crear_noticia' %}">Crear Noticia</a></li>
+                    {% else %}
+                        {# Menú para vecinos #}
+                        <li class="nav-divider">|</li>
+                        <li><a href="{% url 'solicitar_certificado' %}">Solicitar Certificado</a></li>
+                        <li><a href="{% url 'postular_proyecto' %}">Postular Proyecto</a></li>
+                        <li><a href="{% url 'listar_certificados' %}">Mis Certificados</a></li>
+                        <li><a href="{% url 'listar_proyectos' %}">Mis Proyectos</a></li>
+                    {% endif %}
+                    <li class="nav-divider">|</li>
+                    <li><a href="{% url 'logout' %}">Cerrar Sesión ({{ user.first_name }})</a></li>
+                {% else %}
+                    <li><a href="{% url 'registrar_vecino' %}">Registrarse</a></li>
+                    <li class="nav-divider">|</li>
+                    <li><a href="{% url 'login' %}">Iniciar Sesión</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+        <div class="message message-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main class="main-content">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p>&copy; 2024 Junta de Vecinos. Sistema de Gestión Vecinal.</p>
+            <p>Desarrollado con Django</p>
+        </div>
+    </footer>
+</body>
+</html>

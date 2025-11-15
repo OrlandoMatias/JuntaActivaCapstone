@@ -1,0 +1,33 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Solicitar Certificado de Residencia - Sistema de Gestión Vecinal{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <h1>Solicitar Certificado de Residencia</h1>
+    
+    <p style="margin-bottom: 1.5rem; color: #555;">
+        Completa el formulario para solicitar tu certificado de residencia. 
+        Un administrador revisará tu solicitud y te notificará por correo electrónico.
+    </p>
+    
+    <div class="message message-info">
+        <strong>Solicitante:</strong> {{ vecino.nombre }} {{ vecino.apellido }} ({{ vecino.rut }})
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        {% if form.errors %}
+        <div class="message message-error">
+            Por favor corrige los errores a continuación.
+        </div>
+        {% endif %}
+        
+        {{ form.as_p }}
+        
+        <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
+        <a href="{% url 'home' %}" class="btn btn-secondary" style="margin-left: 1rem;">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

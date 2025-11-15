@@ -1,0 +1,132 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Solicitar Reserva - Sistema de Gestión Vecinal{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <h1>📝 Solicitar Reserva de Espacio</h1>
+    
+    <div style="margin-bottom: 20px;">
+        <a href="{% url 'listar_espacios' %}" class="btn btn-secondary">← Volver a Espacios</a>
+        <a href="{% url 'calendario_reservas' %}" class="btn btn-info">📅 Ver Disponibilidad</a>
+    </div>
+    
+    <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; padding: 15px; margin-bottom: 20px;">
+        <strong>ℹ️ Información importante:</strong>
+        <ul style="margin: 10px 0 0 20px;">
+            <li>Su solicitud será revisada por un administrador</li>
+            <li>Recibirá un email cuando su solicitud sea aprobada o rechazada</li>
+            <li>Verifique la disponibilidad en el calendario antes de solicitar</li>
+            <li>Solo puede haber una reserva aprobada por espacio, fecha y horario</li>
+        </ul>
+    </div>
+    
+    <form method="post" style="max-width: 600px;">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+        <div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; padding: 15px; margin-bottom: 20px; color: #721c24;">
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+        
+        <div class="form-group">
+            <label for="{{ form.espacio.id_for_label }}">{{ form.espacio.label }} *</label>
+            {{ form.espacio }}
+            {% if form.espacio.errors %}
+                <div class="error">{{ form.espacio.errors }}</div>
+            {% endif %}
+            <small>Seleccione el espacio que desea reservar</small>
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.fecha.id_for_label }}">{{ form.fecha.label }} *</label>
+            {{ form.fecha }}
+            {% if form.fecha.errors %}
+                <div class="error">{{ form.fecha.errors }}</div>
+            {% endif %}
+            <small>Seleccione la fecha de su reserva (solo fechas futuras)</small>
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.horario.id_for_label }}">{{ form.horario.label }} *</label>
+            {{ form.horario }}
+            {% if form.horario.errors %}
+                <div class="error">{{ form.horario.errors }}</div>
+            {% endif %}
+            <small>Seleccione el horario deseado</small>
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.cantidad_personas.id_for_label }}">{{ form.cantidad_personas.label }} *</label>
+            {{ form.cantidad_personas }}
+            {% if form.cantidad_personas.errors %}
+                <div class="error">{{ form.cantidad_personas.errors }}</div>
+            {% endif %}
+            <small>Indique la cantidad estimada de personas</small>
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.motivo.id_for_label }}">{{ form.motivo.label }} *</label>
+            {{ form.motivo }}
+            {% if form.motivo.errors %}
+                <div class="error">{{ form.motivo.errors }}</div>
+            {% endif %}
+            <small>Describa el motivo de su reserva</small>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button type="submit" class="btn btn-success">✅ Enviar Solicitud</button>
+            <a href="{% url 'listar_espacios' %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+<style>
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+.form-group small {
+    display: block;
+    margin-top: 5px;
+    color: #7f8c8d;
+    font-size: 13px;
+}
+.error {
+    color: #e74c3c;
+    font-size: 14px;
+    margin-top: 5px;
+}
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+}
+.btn-success {
+    background-color: #27ae60;
+    color: white;
+}
+.btn-secondary {
+    background-color: #95a5a6;
+    color: white;
+}
+.btn-info {
+    background-color: #16a085;
+    color: white;
+}
+.btn:hover {
+    opacity: 0.9;
+}
+</style>
+{% endblock %}
