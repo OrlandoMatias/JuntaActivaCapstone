@@ -75,12 +75,51 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Configuración de base de datos
+# Por defecto usa SQLite, pero puede cambiar a MySQL mediante variables de entorno
+DB_ENGINE = config('DB_ENGINE', default='sqlite')
+
+if DB_ENGINE == 'mysql':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': config('DB_NAME'),
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASSWORD'),
+            'HOST': config('DB_HOST', default='localhost'),
+            'PORT': config('DB_PORT', default='3306'),
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            },
+        }
     }
-}
+    print(f"✓ Base de datos: MySQL ({config('DB_HOST', default='localhost')}:{config('DB_PORT', default='3306')}/{config('DB_NAME')})")
+    
+    # Parche para compatibilidad con MariaDB 10.4 en Django 5.x
+    # Solo necesario si tienes XAMPP antiguo con MariaDB 10.4
+    try:
+        from django.db.backends.mysql.base import DatabaseWrapper
+        original_get_database_version = DatabaseWrapper.get_database_version
+        
+        def patched_get_database_version(self):
+            version = original_get_database_version(self)
+            # Si es MariaDB 10.4, reportar como 10.5 para evitar el error
+            if version < (10, 5, 0):
+                return (10, 5, 0)
+            return version
+        
+        DatabaseWrapper.get_database_version = patched_get_database_version
+    except:
+        pass
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+    print("✓ Base de datos: SQLite (db.sqlite3)")
 
 
 # Password validation
