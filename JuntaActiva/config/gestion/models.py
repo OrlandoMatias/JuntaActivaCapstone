@@ -12,6 +12,7 @@ class Vecino(models.Model):
     email = models.EmailField(unique=True)
     telefono = models.CharField(max_length=15)
     direccion = models.CharField(max_length=200)
+    comuna = models.CharField(max_length=100, default='')
     es_miembro = models.BooleanField(default=False)
     fecha_inscripcion = models.DateField(auto_now_add=True)
 
@@ -97,6 +98,7 @@ class Noticia(models.Model):
     """Modelo para representar noticias publicadas para la comunidad"""
     titulo = models.CharField(max_length=200)
     contenido = models.TextField()
+    imagen = models.ImageField(upload_to='noticias/', null=True, blank=True)
     fecha_publicacion = models.DateField(auto_now_add=True)
     autor = models.CharField(max_length=100)
 
@@ -141,10 +143,20 @@ class ReservaEspacio(models.Model):
     ]
     
     HORARIO_CHOICES = [
-        ('manana', 'Mañana (08:00 - 13:00)'),
-        ('tarde', 'Tarde (13:00 - 18:00)'),
-        ('noche', 'Noche (18:00 - 22:00)'),
-        ('dia_completo', 'Día Completo (08:00 - 22:00)'),
+        ('08:00-09:00', '08:00 - 09:00'),
+        ('09:00-10:00', '09:00 - 10:00'),
+        ('10:00-11:00', '10:00 - 11:00'),
+        ('11:00-12:00', '11:00 - 12:00'),
+        ('12:00-13:00', '12:00 - 13:00'),
+        ('13:00-14:00', '13:00 - 14:00'),
+        ('14:00-15:00', '14:00 - 15:00'),
+        ('15:00-16:00', '15:00 - 16:00'),
+        ('16:00-17:00', '16:00 - 17:00'),
+        ('17:00-18:00', '17:00 - 18:00'),
+        ('18:00-19:00', '18:00 - 19:00'),
+        ('19:00-20:00', '19:00 - 20:00'),
+        ('20:00-21:00', '20:00 - 21:00'),
+        ('21:00-22:00', '21:00 - 22:00'),
     ]
     
     vecino = models.ForeignKey(Vecino, on_delete=models.CASCADE, related_name='reservas')

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.contrib.auth import logout, login
+from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail, EmailMessage
@@ -43,6 +43,24 @@ def home(request):
     }
     
     return render(request, 'gestion/home.html', context)
+
+
+def login_view(request):
+    """Vista personalizada de login con notificaciones pop-up"""
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            next_url = request.POST.get('next') or request.GET.get('next') or 'home'
+            return redirect(next_url)
+        else:
+            messages.error(request, 'Usuario o contraseña incorrectos. Por favor, intenta nuevamente.')
+            return redirect('login')
+    
+    return render(request, 'gestion/login.html')
 
 
 def registrar_vecino(request):
@@ -399,6 +417,11 @@ def generar_pdf_certificado(certificado):
     elements.append(Spacer(1, 0.3*inch))
     
     # Cuerpo del certificado
+    # Construir dirección completa con comuna
+    direccion_completa = certificado.vecino.direccion
+    if certificado.vecino.comuna:
+        direccion_completa += f", {certificado.vecino.comuna}"
+    
     texto_certificado = f"""
     Por medio del presente documento, la Junta de Vecinos certifica que:
     <br/><br/>
@@ -408,7 +431,7 @@ def generar_pdf_certificado(certificado):
     Teléfono: {certificado.vecino.telefono}<br/>
     <br/>
     Reside en la dirección:<br/>
-    <b>{certificado.vecino.direccion}</b>
+    <b>{direccion_completa}</b>
     <br/><br/>
     Este certificado se emite a solicitud del interesado para los fines que estime conveniente.
     """
@@ -696,7 +719,7 @@ def crear_noticia(request):
         return redirect('home')
     
     if request.method == 'POST':
-        form = NoticiaForm(request.POST)
+        form = NoticiaForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, 'Noticia publicada exitosamente.')

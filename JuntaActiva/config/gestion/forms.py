@@ -21,7 +21,7 @@ class VecinoForm(forms.ModelForm):
     
     class Meta:
         model = Vecino
-        fields = ['rut', 'nombre', 'apellido', 'email', 'telefono', 'direccion']
+        fields = ['rut', 'nombre', 'apellido', 'email', 'telefono', 'direccion', 'comuna']
         labels = {
             'rut': 'RUT',
             'nombre': 'Nombre',
@@ -29,6 +29,7 @@ class VecinoForm(forms.ModelForm):
             'email': 'Correo Electrónico',
             'telefono': 'Teléfono',
             'direccion': 'Dirección',
+            'comuna': 'Comuna',
         }
         widgets = {
             'rut': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '12.345.678-9'}),
@@ -37,6 +38,7 @@ class VecinoForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'ejemplo@correo.com'}),
             'telefono': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+56912345678'}),
             'direccion': forms.TextInput(attrs={'class': 'form-control'}),
+            'comuna': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Santiago'}),
         }
     
     def clean_email(self):
@@ -127,15 +129,17 @@ class NoticiaForm(forms.ModelForm):
     
     class Meta:
         model = Noticia
-        fields = ['titulo', 'contenido', 'autor']
+        fields = ['titulo', 'contenido', 'imagen', 'autor']
         labels = {
             'titulo': 'Título',
             'contenido': 'Contenido',
+            'imagen': 'Imagen (opcional)',
             'autor': 'Autor',
         }
         widgets = {
             'titulo': forms.TextInput(attrs={'class': 'form-control'}),
             'contenido': forms.Textarea(attrs={'class': 'form-control', 'rows': 8}),
+            'imagen': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
             'autor': forms.TextInput(attrs={'class': 'form-control'}),
         }
 

@@ -37,15 +37,15 @@
                     {% endif %}
                 </td>
                 <td>
-                    <form method="post" action="{% url 'cambiar_estado_miembro' vecino.id %}" style="display: inline;">
+                    <form method="post" action="{% url 'cambiar_estado_miembro' vecino.id %}" style="display: inline; margin: 0;">
                         {% csrf_token %}
                         {% if vecino.es_miembro %}
-                            <button type="submit" class="btn btn-warning" onclick="return confirm('¿Quitar membresía a {{ vecino.nombre }}?')">
-                                Quitar Membresía
+                            <button type="submit" class="btn btn-warning" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; white-space: nowrap;" onclick="return confirm('¿Quitar membresía a {{ vecino.nombre }}?')">
+                                Quitar
                             </button>
                         {% else %}
-                            <button type="submit" class="btn btn-success" onclick="return confirm('¿Aprobar a {{ vecino.nombre }} como miembro?')">
-                                Aprobar Miembro
+                            <button type="submit" class="btn btn-success" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; white-space: nowrap;" onclick="return confirm('¿Aprobar a {{ vecino.nombre }} como miembro?')">
+                                Aprobar
                             </button>
                         {% endif %}
                     </form>

@@ -14,6 +14,10 @@ import os
 from pathlib import Path
 from decouple import config
 
+# IMPORTANTE: Aplicar parche para MariaDB 10.4 ANTES de cualquier operación de BD
+from .mariadb_patch import patch_mariadb_compatibility
+patch_mariadb_compatibility()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -95,23 +99,7 @@ if DB_ENGINE == 'mysql':
         }
     }
     print(f"✓ Base de datos: MySQL ({config('DB_HOST', default='localhost')}:{config('DB_PORT', default='3306')}/{config('DB_NAME')})")
-    
-    # Parche para compatibilidad con MariaDB 10.4 en Django 5.x
-    # Solo necesario si tienes XAMPP antiguo con MariaDB 10.4
-    try:
-        from django.db.backends.mysql.base import DatabaseWrapper
-        original_get_database_version = DatabaseWrapper.get_database_version
-        
-        def patched_get_database_version(self):
-            version = original_get_database_version(self)
-            # Si es MariaDB 10.4, reportar como 10.5 para evitar el error
-            if version < (10, 5, 0):
-                return (10, 5, 0)
-            return version
-        
-        DatabaseWrapper.get_database_version = patched_get_database_version
-    except:
-        pass
+    print("✓ Parche MariaDB 10.4: Compatibilidad con Django 5.2 habilitada")
 else:
     DATABASES = {
         'default': {
@@ -158,6 +146,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "core" / "static"]
+
+# Media files (Uploaded files)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # Email configuration

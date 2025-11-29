@@ -51,17 +51,19 @@
                 </td>
                 <td>{{ reserva.fecha_solicitud|date:"d/m/Y H:i" }}</td>
                 <td>
-                    <button type="button" class="btn btn-info btn-sm" onclick="verDetalle{{ reserva.id }}()">👁️ Ver</button>
-                    {% if reserva.estado == 'pendiente' %}
-                    <form method="post" action="{% url 'aprobar_reserva' reserva.id %}" style="display: inline;" onsubmit="return confirm('¿Aprobar esta reserva?');">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-success btn-sm">✅ Aprobar</button>
-                    </form>
-                    <form method="post" action="{% url 'rechazar_reserva' reserva.id %}" style="display: inline;" onsubmit="return confirm('¿Rechazar esta reserva?');">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger btn-sm">❌ Rechazar</button>
-                    </form>
-                    {% endif %}
+                    <div style="display: flex; gap: 3px; flex-wrap: wrap; align-items: center;">
+                        <button type="button" class="btn btn-info btn-sm" onclick="toggleDetalle('detalle{{ reserva.id }}')">Ver</button>
+                        {% if reserva.estado == 'pendiente' %}
+                        <form method="post" action="{% url 'aprobar_reserva' reserva.id %}" style="display: inline; margin: 0;" onsubmit="return confirm('¿Aprobar esta reserva?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-sm">Aprobar</button>
+                        </form>
+                        <form method="post" action="{% url 'rechazar_reserva' reserva.id %}" style="display: inline; margin: 0;" onsubmit="return confirm('¿Rechazar esta reserva?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Rechazar</button>
+                        </form>
+                        {% endif %}
+                    </div>
                 </td>
             </tr>
             <tr id="detalle{{ reserva.id }}" style="display: none;">
@@ -91,16 +93,6 @@
                     {% endif %}
                 </td>
             </tr>
-            <script>
-            function verDetalle{{ reserva.id }}() {
-                var detalle = document.getElementById('detalle{{ reserva.id }}');
-                if (detalle.style.display === 'none') {
-                    detalle.style.display = 'table-row';
-                } else {
-                    detalle.style.display = 'none';
-                }
-            }
-            </script>
             {% endfor %}
         </tbody>
     </table>
@@ -109,16 +101,35 @@
     {% endif %}
 </div>
 
+<script>
+function toggleDetalle(id) {
+    var detalle = document.getElementById(id);
+    if (detalle.style.display === 'none') {
+        detalle.style.display = 'table-row';
+    } else {
+        detalle.style.display = 'none';
+    }
+}
+</script>
+
 <style>
+.data-table td {
+    vertical-align: middle;
+}
+.data-table td:last-child {
+    min-width: 200px;
+    max-width: 250px;
+}
 .btn {
     display: inline-block;
-    padding: 8px 16px;
-    margin: 2px;
+    padding: 6px 10px;
+    margin: 0;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     text-decoration: none;
-    font-size: 13px;
+    font-size: 12px;
+    white-space: nowrap;
 }
 .btn-success {
     background-color: #27ae60;
@@ -133,17 +144,18 @@
     color: white;
 }
 .btn-sm {
-    padding: 6px 12px;
-    font-size: 12px;
+    padding: 4px 8px;
+    font-size: 10px;
 }
 .btn:hover {
     opacity: 0.9;
 }
 .badge {
-    padding: 5px 10px;
+    padding: 4px 8px;
     border-radius: 12px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: bold;
+    white-space: nowrap;
 }
 .badge-warning {
     background-color: #f39c12;

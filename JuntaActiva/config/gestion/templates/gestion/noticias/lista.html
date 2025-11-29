@@ -23,6 +23,11 @@
                     <span class="noticia-autor">Por: {{ noticia.autor }}</span>
                 </p>
             </div>
+            {% if noticia.imagen %}
+            <div class="noticia-imagen">
+                <img src="{{ noticia.imagen.url }}" alt="{{ noticia.titulo }}">
+            </div>
+            {% endif %}
             <div class="noticia-contenido">
                 {% if noticia.contenido|length > 300 %}
                     <p>{{ noticia.contenido|slice:":300" }}...</p>
